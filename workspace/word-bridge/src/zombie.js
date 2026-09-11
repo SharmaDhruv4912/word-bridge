@@ -7,11 +7,11 @@ export class ZombieHorde {
     this.reset(55);
   }
 
-  reset(speed) {
+  reset(speed, startX, timeLimit) {
     this.speed = speed;
-    this.x = -200;
+    this.x = startX !== undefined ? startX : -520;
     this.paused = false;
-    this.timeRemaining = 30;
+    this.timeRemaining = timeLimit || 45;
     this.zombies = Array.from({ length: 8 }, (_, i) => ({
       offsetX: i * 35 - i * 5,
       offsetY: (i % 3) * 4,

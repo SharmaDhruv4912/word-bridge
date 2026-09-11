@@ -64,60 +64,107 @@ export class Renderer {
     const groundY = H - 90;
     const chasmX = level.chasmX;
     const chasmW = level.chasmWidth;
+    const rightX = chasmX + chasmW;
 
-    // Left platform
+    // ── Left platform ──
     ctx.fillStyle = level.groundColor;
     ctx.fillRect(0, groundY, chasmX, H - groundY);
-    // Grass top
-    ctx.fillStyle = '#4aaa2a';
-    ctx.fillRect(0, groundY, chasmX, 8);
-    // Dirt detail lines
-    ctx.strokeStyle = this.darken(level.groundColor, 30);
+
+    // Grass strip
+    ctx.fillStyle = '#4cb832';
+    ctx.fillRect(0, groundY, chasmX, 10);
+
+    // Grass highlight
+    ctx.fillStyle = '#6ad640';
+    ctx.fillRect(0, groundY, chasmX, 4);
+
+    // Dirt horizontal layers
+    ctx.strokeStyle = 'rgba(0,0,0,0.12)';
     ctx.lineWidth = 1;
-    for (let y = groundY + 20; y < H; y += 15) {
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(chasmX, y);
-      ctx.stroke();
+    for (let y = groundY + 22; y < H; y += 18) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(chasmX, y); ctx.stroke();
     }
 
-    // Right platform
-    const rightX = chasmX + chasmW;
+    // Grass tufts at chasm edge
+    for (let gx = chasmX - 50; gx <= chasmX - 6; gx += 10) {
+      ctx.fillStyle = '#3aaa28';
+      ctx.beginPath();
+      ctx.moveTo(gx, groundY);
+      ctx.lineTo(gx - 3, groundY - 8);
+      ctx.lineTo(gx + 3, groundY - 8);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    // ── Right platform ──
     ctx.fillStyle = level.groundColor;
     ctx.fillRect(rightX, groundY, W - rightX, H - groundY);
-    ctx.fillStyle = '#4aaa2a';
-    ctx.fillRect(rightX, groundY, W - rightX, 8);
-    for (let y = groundY + 20; y < H; y += 15) {
-      ctx.beginPath();
-      ctx.moveTo(rightX, y);
-      ctx.lineTo(W, y);
-      ctx.stroke();
+    ctx.fillStyle = '#4cb832';
+    ctx.fillRect(rightX, groundY, W - rightX, 10);
+    ctx.fillStyle = '#6ad640';
+    ctx.fillRect(rightX, groundY, W - rightX, 4);
+    for (let y = groundY + 22; y < H; y += 18) {
+      ctx.beginPath(); ctx.moveTo(rightX, y); ctx.lineTo(W, y); ctx.stroke();
     }
 
-    // Chasm void
+    // Grass tufts at right chasm edge
+    for (let gx = rightX + 6; gx <= rightX + 50; gx += 10) {
+      ctx.fillStyle = '#3aaa28';
+      ctx.beginPath();
+      ctx.moveTo(gx, groundY);
+      ctx.lineTo(gx - 3, groundY - 8);
+      ctx.lineTo(gx + 3, groundY - 8);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    // ── Chasm void ──
     const voidGrad = ctx.createLinearGradient(chasmX, groundY, chasmX, H);
-    voidGrad.addColorStop(0, '#110022');
+    voidGrad.addColorStop(0, '#1a0033');
+    voidGrad.addColorStop(0.4, '#0a0018');
     voidGrad.addColorStop(1, '#000000');
     ctx.fillStyle = voidGrad;
     ctx.fillRect(chasmX, groundY, chasmW, H - groundY);
 
-    // Chasm edge glow
-    ctx.strokeStyle = 'rgba(200, 100, 255, 0.4)';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.moveTo(chasmX, groundY);
-    ctx.lineTo(chasmX, H);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(rightX, groundY);
-    ctx.lineTo(rightX, H);
-    ctx.stroke();
+    // Chasm inner glow lines
+    ctx.strokeStyle = 'rgba(160, 60, 255, 0.25)';
+    ctx.lineWidth = 2;
+    for (let cy = groundY + 15; cy < H; cy += 25) {
+      ctx.beginPath();
+      ctx.moveTo(chasmX + 4, cy);
+      ctx.lineTo(rightX - 4, cy);
+      ctx.stroke();
+    }
 
-    // Chasm width indicator label
-    ctx.fillStyle = 'rgba(255,255,255,0.3)';
-    ctx.font = 'bold 11px monospace';
+    // Chasm edge purple glow
+    const glowL = ctx.createLinearGradient(chasmX, 0, chasmX + 12, 0);
+    glowL.addColorStop(0, 'rgba(180, 80, 255, 0.5)');
+    glowL.addColorStop(1, 'rgba(180, 80, 255, 0)');
+    ctx.fillStyle = glowL;
+    ctx.fillRect(chasmX, groundY, 12, H - groundY);
+
+    const glowR = ctx.createLinearGradient(rightX - 12, 0, rightX, 0);
+    glowR.addColorStop(0, 'rgba(180, 80, 255, 0)');
+    glowR.addColorStop(1, 'rgba(180, 80, 255, 0.5)');
+    ctx.fillStyle = glowR;
+    ctx.fillRect(rightX - 12, groundY, 12, H - groundY);
+
+    // Floating dust motes in chasm
+    const t = Date.now() / 2000;
+    ctx.fillStyle = 'rgba(200, 150, 255, 0.4)';
+    for (let m = 0; m < 4; m++) {
+      const mx = chasmX + ((m * 57 + t * 30) % chasmW);
+      const my = groundY + 20 + ((m * 43 + t * 25) % (H - groundY - 30));
+      ctx.beginPath();
+      ctx.arc(mx, my, 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Chasm width label
+    ctx.fillStyle = 'rgba(255,255,255,0.25)';
+    ctx.font = '10px monospace';
     ctx.textAlign = 'center';
-    ctx.fillText(`← ${level.chasmWidth}px →`, chasmX + chasmW / 2, groundY + 20);
+    ctx.fillText(`need ${level.minWordLength}+ letters`, chasmX + chasmW / 2, groundY + 18);
   }
 
   drawCloud(x, y, size) {
@@ -132,7 +179,7 @@ export class Renderer {
   drawTitleScreen() {
     const ctx = this.ctx;
     const W = this.W, H = this.H;
-    this.titleTimer += 0.016;
+    // titleTimer is updated by updateParallax — don't add here again
 
     // Background
     const grad = ctx.createLinearGradient(0, 0, 0, H);

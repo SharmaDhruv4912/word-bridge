@@ -74,7 +74,8 @@ export class UI {
 
     if (state === GameState.GATEKEEPER_CHALLENGE ||
         state === GameState.BRIDGE_BUILDING ||
-        state === GameState.BRIDGE_COLLAPSE) {
+        state === GameState.BRIDGE_COLLAPSE ||
+        state === GameState.BRIDGE_CROSSING) {
       this.gatekeeper.render(ctx, level.chasmX, level.chasmWidth);
     }
 
@@ -104,51 +105,66 @@ export class UI {
     const ctx = this.ctx;
     const W = this.W;
 
-    // Timer bar background
-    ctx.fillStyle = 'rgba(0,0,0,0.5)';
-    this.roundRect(ctx, 10, 10, 200, 24, 6);
+    // ── Timer bar (top-left, full width strip) ──
+    const BAR_H = 18;
+    const BAR_Y = 8;
+    const BAR_W = W - 20;
+
+    ctx.fillStyle = 'rgba(0,0,0,0.55)';
+    this.roundRect(ctx, 10, BAR_Y, BAR_W, BAR_H + 4, 5);
     ctx.fill();
 
-    // Timer bar fill
     const pct = Math.max(0, timeRemaining / level.timeLimit);
-    const barColor = pct > 0.5 ? '#44ff88' : pct > 0.25 ? '#ffdd44' : '#ff3344';
+    const barColor = pct > 0.5 ? '#44cc77' : pct > 0.25 ? '#ffcc00' : '#ff3344';
     ctx.fillStyle = barColor;
-    this.roundRect(ctx, 12, 12, Math.max(0, 196 * pct), 20, 4);
+    this.roundRect(ctx, 12, BAR_Y + 2, Math.max(0, (BAR_W - 4) * pct), BAR_H, 4);
     ctx.fill();
 
-    // Timer text
+    // Timer label left
     ctx.fillStyle = '#fff';
-    ctx.font = 'bold 13px monospace';
+    ctx.font = 'bold 12px monospace';
     ctx.textAlign = 'left';
-    ctx.fillText(`⏱ ${Math.ceil(timeRemaining)}s`, 18, 26);
+    ctx.textBaseline = 'middle';
+    ctx.fillText(`⏱ ${Math.ceil(timeRemaining)}s`, 16, BAR_Y + BAR_H / 2 + 2);
 
-    // Score
-    ctx.fillStyle = 'rgba(0,0,0,0.5)';
-    this.roundRect(ctx, W - 160, 10, 150, 24, 6);
-    ctx.fill();
-    ctx.fillStyle = '#ffdd44';
-    ctx.font = 'bold 14px monospace';
-    ctx.textAlign = 'right';
-    ctx.fillText(`★ ${score.toLocaleString()}`, W - 14, 26);
-
-    // Level indicator
-    ctx.fillStyle = 'rgba(0,0,0,0.5)';
-    this.roundRect(ctx, W / 2 - 70, 10, 140, 24, 6);
-    ctx.fill();
-    ctx.fillStyle = '#fff';
-    ctx.font = 'bold 13px monospace';
+    // Level label centre
+    ctx.fillStyle = 'rgba(255,255,255,0.9)';
+    ctx.font = 'bold 11px monospace';
     ctx.textAlign = 'center';
-    ctx.fillText(`LEVEL ${levelIndex + 1}: ${level.name}`, W / 2, 26);
+    ctx.fillText(`LVL ${levelIndex + 1}  ${level.name.toUpperCase()}`, W / 2, BAR_Y + BAR_H / 2 + 2);
 
-    // Zombie warning when close
-    if (timeRemaining < 5) {
-      const pulse = Math.abs(Math.sin(Date.now() / 200));
-      ctx.fillStyle = `rgba(255, 50, 50, ${pulse * 0.3})`;
+    // Score right
+    ctx.fillStyle = '#ffdd44';
+    ctx.font = 'bold 12px monospace';
+    ctx.textAlign = 'right';
+    ctx.fillText(`★ ${score.toLocaleString()}`, W - 14, BAR_Y + BAR_H / 2 + 2);
+
+    ctx.textBaseline = 'alphabetic';
+
+    // ── Zombie proximity bar (bottom strip) ──
+    const zBarY = this.H - 18;
+    ctx.fillStyle = 'rgba(0,0,0,0.4)';
+    this.roundRect(ctx, 10, zBarY, W - 20, 10, 4);
+    ctx.fill();
+    ctx.fillStyle = pct > 0.5 ? '#ff6644' : '#ff2200';
+    this.roundRect(ctx, 12, zBarY + 1, Math.max(0, (W - 24) * (1 - pct)), 8, 3);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255,100,60,0.85)';
+    ctx.font = 'bold 9px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('🧟 ZOMBIE PROXIMITY', W / 2, zBarY + 9);
+
+    // ── Danger flash when very close ──
+    if (pct < 0.2) {
+      const pulse = Math.abs(Math.sin(Date.now() / 160));
+      ctx.fillStyle = `rgba(255, 30, 30, ${pulse * 0.22})`;
       ctx.fillRect(0, 0, W, this.H);
-      ctx.fillStyle = `rgba(255, 80, 80, ${pulse})`;
-      ctx.font = 'bold 28px Arial';
-      ctx.textAlign = 'center';
-      ctx.fillText('⚠ ZOMBIES INCOMING! ⚠', W / 2, 70);
+      if (pct < 0.1) {
+        ctx.fillStyle = `rgba(255, 80, 80, ${pulse * 0.9})`;
+        ctx.font = 'bold 26px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('⚠ THEY\'RE RIGHT BEHIND YOU! ⚠', W / 2, 68);
+      }
     }
   }
 

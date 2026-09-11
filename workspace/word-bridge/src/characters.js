@@ -109,70 +109,91 @@ export class Characters {
 
   drawGreenSquare(ctx, x, y) {
     const f = this.frame;
-    const bob = Math.sin(f * Math.PI / 2) * 3;
-    const legSwing = Math.sin(f * Math.PI / 2) * 12;
+    const bob = Math.sin(f * Math.PI / 2) * 4;
+    const legSwing = Math.sin(f * Math.PI / 2) * 14;
     const dir = this.facingLeft ? -1 : 1;
 
     ctx.save();
     ctx.translate(x, y - bob);
 
     if (this.celebrating) {
-      const jump = Math.abs(Math.sin(this.celebrateTimer * 8)) * 20;
+      const jump = Math.abs(Math.sin(this.celebrateTimer * 8)) * 28;
       ctx.translate(0, -jump);
     }
 
-    ctx.scale(dir, 1);
+    ctx.scale(dir * 1.3, 1.3); // 30% bigger
 
-    // Body — green square
-    ctx.fillStyle = '#44cc44';
-    ctx.strokeStyle = '#228822';
-    ctx.lineWidth = 2;
-    ctx.fillRect(-14, -38, 28, 28);
-    ctx.strokeRect(-14, -38, 28, 28);
+    // Shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.18)';
+    ctx.beginPath();
+    ctx.ellipse(0, 2, 18, 5, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Body — bright green square
+    ctx.fillStyle = '#33dd55';
+    ctx.strokeStyle = '#1a8830';
+    ctx.lineWidth = 2.5;
+    ctx.fillRect(-16, -42, 32, 32);
+    ctx.strokeRect(-16, -42, 32, 32);
+
+    // Face highlight
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.fillRect(-14, -40, 14, 10);
 
     // Eyes
     ctx.fillStyle = '#fff';
-    ctx.fillRect(-8, -33, 7, 7);
-    ctx.fillRect(1, -33, 7, 7);
-    ctx.fillStyle = '#000';
-    ctx.fillRect(-6, -31, 4, 4);
-    ctx.fillRect(3, -31, 4, 4);
+    ctx.fillRect(-10, -36, 8, 8);
+    ctx.fillRect(2, -36, 8, 8);
+    ctx.fillStyle = '#111';
+    ctx.fillRect(-8, -34, 5, 5);
+    ctx.fillRect(4, -34, 5, 5);
+    // Pupils
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(-7, -33, 2, 2);
+    ctx.fillRect(5, -33, 2, 2);
 
-    // Mouth (happy or scared)
-    ctx.strokeStyle = '#000';
-    ctx.lineWidth = 1.5;
+    // Mouth
+    ctx.strokeStyle = '#1a5520';
+    ctx.lineWidth = 2;
     ctx.beginPath();
     if (this.stumbling) {
-      ctx.arc(0, -23, 5, 0, Math.PI); // frown
+      ctx.arc(0, -18, 6, 0, Math.PI);
     } else {
-      ctx.arc(0, -27, 4, 0, Math.PI, true); // smile
+      ctx.arc(0, -22, 5, 0, Math.PI, true);
     }
     ctx.stroke();
 
     // Legs
-    ctx.fillStyle = '#226622';
-    ctx.save(); ctx.translate(-6, -10); ctx.rotate(legSwing * 0.04);
-    ctx.fillRect(-4, 0, 8, 16); ctx.restore();
-    ctx.save(); ctx.translate(6, -10); ctx.rotate(-legSwing * 0.04);
-    ctx.fillRect(-4, 0, 8, 16); ctx.restore();
+    ctx.fillStyle = '#1a6622';
+    ctx.save(); ctx.translate(-7, -10); ctx.rotate(legSwing * 0.045);
+    ctx.fillRect(-5, 0, 10, 18); ctx.restore();
+    ctx.save(); ctx.translate(7, -10); ctx.rotate(-legSwing * 0.045);
+    ctx.fillRect(-5, 0, 10, 18); ctx.restore();
+
+    // Shoes
+    ctx.fillStyle = '#333';
+    ctx.save(); ctx.translate(-7, -10); ctx.rotate(legSwing * 0.045);
+    ctx.fillRect(-6, 16, 12, 5); ctx.restore();
+    ctx.save(); ctx.translate(7, -10); ctx.rotate(-legSwing * 0.045);
+    ctx.fillRect(-6, 16, 12, 5); ctx.restore();
 
     // Arms
-    ctx.fillStyle = '#44cc44';
-    ctx.save(); ctx.translate(-14, -30); ctx.rotate(-legSwing * 0.04);
-    ctx.fillRect(-10, -3, 10, 6); ctx.restore();
-    ctx.save(); ctx.translate(14, -30); ctx.rotate(legSwing * 0.04);
-    ctx.fillRect(0, -3, 10, 6); ctx.restore();
+    ctx.fillStyle = '#33dd55';
+    ctx.save(); ctx.translate(-16, -34); ctx.rotate(-legSwing * 0.045);
+    ctx.fillRect(-12, -4, 12, 7); ctx.restore();
+    ctx.save(); ctx.translate(16, -34); ctx.rotate(legSwing * 0.045);
+    ctx.fillRect(0, -4, 12, 7); ctx.restore();
 
     // Celebrate stars
     if (this.celebrating) {
       for (let i = 0; i < 5; i++) {
         const angle = (i / 5) * Math.PI * 2 + this.celebrateTimer * 4;
-        const sx = Math.cos(angle) * 25;
-        const sy = Math.sin(angle) * 25 - 20;
-        ctx.fillStyle = `hsl(${i * 60 + this.celebrateTimer * 200}, 100%, 60%)`;
-        ctx.font = '14px Arial';
+        const sx = Math.cos(angle) * 30;
+        const sy = Math.sin(angle) * 30 - 20;
+        ctx.fillStyle = `hsl(${i * 60 + this.celebrateTimer * 200}, 100%, 65%)`;
+        ctx.font = '16px Arial';
         ctx.textAlign = 'center';
-        ctx.fillText('★', sx, sy - 30);
+        ctx.fillText('★', sx, sy - 35);
       }
     }
 
@@ -181,75 +202,113 @@ export class Characters {
 
   drawPurpleShirt(ctx, x, y) {
     const f = this.frame;
-    const bob = Math.sin((f + 2) * Math.PI / 2) * 3;
-    const legSwing = Math.sin((f + 2) * Math.PI / 2) * 12;
+    const bob = Math.sin((f + 2) * Math.PI / 2) * 4;
+    const legSwing = Math.sin((f + 2) * Math.PI / 2) * 14;
     const dir = this.facingLeft ? -1 : 1;
 
     ctx.save();
     ctx.translate(x, y - bob);
 
     if (this.celebrating) {
-      const jump = Math.abs(Math.sin(this.celebrateTimer * 8 + 1)) * 18;
+      const jump = Math.abs(Math.sin(this.celebrateTimer * 8 + 1)) * 24;
       ctx.translate(0, -jump);
     }
 
-    ctx.scale(dir, 1);
+    ctx.scale(dir * 1.3, 1.3);
+
+    // Shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.18)';
+    ctx.beginPath();
+    ctx.ellipse(0, 2, 16, 5, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Legs / jeans
+    ctx.fillStyle = '#2c3e50';
+    ctx.save(); ctx.translate(-6, -12); ctx.rotate(legSwing * 0.045);
+    ctx.fillRect(-5, 0, 10, 18); ctx.restore();
+    ctx.save(); ctx.translate(6, -12); ctx.rotate(-legSwing * 0.045);
+    ctx.fillRect(-5, 0, 10, 18); ctx.restore();
+
+    // Shoes
+    ctx.fillStyle = '#1a1a2e';
+    ctx.save(); ctx.translate(-6, -12); ctx.rotate(legSwing * 0.045);
+    ctx.fillRect(-6, 16, 12, 5); ctx.restore();
+    ctx.save(); ctx.translate(6, -12); ctx.rotate(-legSwing * 0.045);
+    ctx.fillRect(-6, 16, 12, 5); ctx.restore();
+
+    // Purple shirt body
+    ctx.fillStyle = '#9b59b6';
+    ctx.strokeStyle = '#5b2c6f';
+    ctx.lineWidth = 2.5;
+    ctx.fillRect(-14, -42, 28, 32);
+    ctx.strokeRect(-14, -42, 28, 32);
+
+    // Shirt collar V
+    ctx.fillStyle = '#5b2c6f';
+    ctx.beginPath();
+    ctx.moveTo(-6, -42); ctx.lineTo(0, -33); ctx.lineTo(6, -42);
+    ctx.fill();
+
+    // Shirt highlight
+    ctx.fillStyle = 'rgba(255,255,255,0.15)';
+    ctx.fillRect(-12, -40, 10, 14);
+
+    // Arms
+    ctx.fillStyle = '#a569bd';
+    ctx.save(); ctx.translate(-14, -36); ctx.rotate(-legSwing * 0.045);
+    ctx.fillRect(-12, -4, 12, 7); ctx.restore();
+    ctx.save(); ctx.translate(14, -36); ctx.rotate(legSwing * 0.045);
+    ctx.fillRect(0, -4, 12, 7); ctx.restore();
+
+    // Neck
+    ctx.fillStyle = '#ffcc88';
+    ctx.fillRect(-4, -46, 8, 6);
 
     // Head
     ctx.fillStyle = '#ffcc88';
-    ctx.strokeStyle = '#cc8844';
+    ctx.strokeStyle = '#cc9955';
     ctx.lineWidth = 1.5;
     ctx.beginPath();
-    ctx.ellipse(0, -46, 10, 12, 0, 0, Math.PI * 2);
+    ctx.ellipse(0, -54, 12, 14, 0, 0, Math.PI * 2);
     ctx.fill(); ctx.stroke();
 
-    // Hair
-    ctx.fillStyle = '#553311';
-    ctx.fillRect(-10, -58, 20, 10);
+    // Face highlight
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
     ctx.beginPath();
-    ctx.ellipse(0, -57, 10, 5, 0, 0, Math.PI * 2);
+    ctx.ellipse(-3, -58, 5, 4, -0.3, 0, Math.PI * 2);
     ctx.fill();
 
+    // Hair
+    ctx.fillStyle = '#4a2800';
+    ctx.fillRect(-12, -68, 24, 12);
+    ctx.beginPath();
+    ctx.ellipse(0, -66, 12, 6, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // Hair strand
+    ctx.fillStyle = '#5a3200';
+    ctx.fillRect(4, -68, 4, 8);
+
     // Eyes
-    ctx.fillStyle = '#000';
-    ctx.fillRect(-5, -49, 3, 3);
-    ctx.fillRect(2, -49, 3, 3);
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(-7, -57, 5, 5);
+    ctx.fillRect(2, -57, 5, 5);
+    ctx.fillStyle = '#3a1a00';
+    ctx.fillRect(-6, -56, 3, 3);
+    ctx.fillRect(3, -56, 3, 3);
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(-5, -56, 1, 1);
+    ctx.fillRect(4, -56, 1, 1);
 
     // Mouth
     ctx.strokeStyle = '#aa5533';
     ctx.lineWidth = 1.5;
     ctx.beginPath();
     if (this.stumbling) {
-      ctx.arc(0, -41, 3, 0, Math.PI);
+      ctx.arc(0, -47, 4, 0, Math.PI);
     } else {
-      ctx.arc(0, -44, 3, 0, Math.PI, true);
+      ctx.arc(0, -50, 3.5, 0, Math.PI, true);
     }
     ctx.stroke();
-
-    // Purple shirt body
-    ctx.fillStyle = '#9b59b6';
-    ctx.strokeStyle = '#6c3483';
-    ctx.lineWidth = 2;
-    ctx.fillRect(-12, -38, 24, 26);
-    ctx.strokeRect(-12, -38, 24, 26);
-
-    // Shirt stripe
-    ctx.fillStyle = '#7d3c98';
-    ctx.fillRect(-12, -32, 24, 4);
-
-    // Legs / jeans
-    ctx.fillStyle = '#2c3e50';
-    ctx.save(); ctx.translate(-5, -12); ctx.rotate(legSwing * 0.04);
-    ctx.fillRect(-4, 0, 8, 16); ctx.restore();
-    ctx.save(); ctx.translate(5, -12); ctx.rotate(-legSwing * 0.04);
-    ctx.fillRect(-4, 0, 8, 16); ctx.restore();
-
-    // Arms
-    ctx.fillStyle = '#9b59b6';
-    ctx.save(); ctx.translate(-12, -32); ctx.rotate(-legSwing * 0.04);
-    ctx.fillRect(-10, -3, 10, 6); ctx.restore();
-    ctx.save(); ctx.translate(12, -32); ctx.rotate(legSwing * 0.04);
-    ctx.fillRect(0, -3, 10, 6); ctx.restore();
 
     ctx.restore();
   }

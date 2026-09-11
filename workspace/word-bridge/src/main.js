@@ -25,6 +25,7 @@ class Game {
     this.shakeX = 0;
     this.shakeY = 0;
     this.shakeDuration = 0;
+    this.levelTransitioning = false;
 
     this.renderer = new Renderer(this.canvas, this.ctx);
     this.characters = new Characters(this.canvas);
@@ -145,8 +146,10 @@ class Game {
     this.levelIndex = 0;
     this.score = 0;
     this.bestWord = '';
+    this.levelTransitioning = false;
+    const lv = LEVELS[0];
     this.characters.reset();
-    this.zombies.reset(LEVELS[0].zombieSpeed);
+    this.zombies.reset(lv.zombieSpeed, lv.zombieStartX, lv.timeLimit);
     this.setState(GameState.RUNNING);
     this.audio.play('start');
   }
@@ -156,9 +159,10 @@ class Game {
   }
 
   startLevel() {
+    this.levelTransitioning = false;
     const level = LEVELS[this.levelIndex];
     this.characters.reset();
-    this.zombies.reset(level.zombieSpeed);
+    this.zombies.reset(level.zombieSpeed, level.zombieStartX, level.timeLimit);
     this.bridge.reset();
     this.setState(GameState.RUNNING);
   }
@@ -187,6 +191,7 @@ class Game {
       this.audio.play('levelComplete');
     }
     if (newState === GameState.GAME_OVER) {
+      this.hideWordInput();
       this.audio.play('gameOver');
     }
     if (newState === GameState.VICTORY) {
@@ -265,7 +270,8 @@ class Game {
     if (this.state === GameState.BRIDGE_CROSSING) {
       this.characters.updateCrossing(dt, this.bridge, level);
       this.bridge.update(dt);
-      if (this.characters.crossingComplete(level)) {
+      if (this.characters.crossingComplete(level) && !this.levelTransitioning) {
+        this.levelTransitioning = true;
         this.setState(GameState.LEVEL_COMPLETE);
         setTimeout(() => {
           this.levelIndex++;
@@ -295,6 +301,7 @@ class Game {
     const level = LEVELS[this.levelIndex] || LEVELS[LEVELS.length - 1];
 
     if (this.state === GameState.TITLE) {
+      this.renderer.titleTimer += dt;
       this.renderer.drawTitleScreen();
     } else if (this.state === GameState.DICTIONARY_MODE || this.state === GameState.SANDBOX) {
       this.dictMode.render();

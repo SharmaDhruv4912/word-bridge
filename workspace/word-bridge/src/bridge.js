@@ -231,6 +231,7 @@ export class Bridge {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(tile.letter, 0, 0);
+    ctx.textBaseline = 'alphabetic'; // reset to default
 
     // Crack overlay
     if (tile.cracking || tile.collapsing) {
