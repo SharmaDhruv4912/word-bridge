@@ -237,6 +237,11 @@ class Game {
 
     const level = LEVELS[this.levelIndex] || LEVELS[LEVELS.length - 1];
 
+    // Always tick title timer (used for animations on title screen)
+    if (this.state === GameState.TITLE) {
+      this.renderer.titleTimer += dt;
+    }
+
     if (this.state === GameState.RUNNING) {
       this.characters.update(dt, level);
       this.zombies.update(dt);
@@ -301,7 +306,6 @@ class Game {
     const level = LEVELS[this.levelIndex] || LEVELS[LEVELS.length - 1];
 
     if (this.state === GameState.TITLE) {
-      this.renderer.titleTimer += dt;
       this.renderer.drawTitleScreen();
     } else if (this.state === GameState.DICTIONARY_MODE || this.state === GameState.SANDBOX) {
       this.dictMode.render();
