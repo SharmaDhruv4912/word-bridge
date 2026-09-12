@@ -94,7 +94,11 @@ class Game {
 
     if (!result.valid) {
       input.className = 'invalid';
-      validMsg.textContent = "That's not a real word! Try again.";
+      if (result.error === 'offline') {
+        validMsg.textContent = "Can't reach dictionary — check your connection!";
+      } else {
+        validMsg.textContent = "Not a real word! Nice try though 😏";
+      }
       this.shakeInput();
       this.audio.play('invalid');
       return;
