@@ -112,6 +112,20 @@
     </div>
   </div>
 
+  <!-- Error overlay: catches module errors and shows them on screen -->
+  <div id="error-overlay" style="display:none;position:fixed;top:0;left:0;width:100%;background:#1a0010;color:#ff4466;font:14px monospace;padding:20px;z-index:9999;white-space:pre-wrap;max-height:50vh;overflow:auto;border-bottom:2px solid #ff4466;"></div>
+  <script>
+    window.addEventListener('error', function(e) {
+      var el = document.getElementById('error-overlay');
+      el.style.display = 'block';
+      el.textContent += '❌ ' + e.message + '\n   at ' + e.filename + ':' + e.lineno + ':' + e.colno + '\n\n';
+    });
+    window.addEventListener('unhandledrejection', function(e) {
+      var el = document.getElementById('error-overlay');
+      el.style.display = 'block';
+      el.textContent += '❌ Promise: ' + (e.reason && e.reason.message ? e.reason.message : e.reason) + '\n\n';
+    });
+  </script>
   <script type="module" src="src/main.js"></script>
 </body>
 </html>
